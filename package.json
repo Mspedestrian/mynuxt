@@ -26,6 +26,7 @@
     "nuxt": "^1.0.0-rc3",
     "postcss-px2rem": "^0.3.0",
     "postcss-px2rem-exclude": "^0.0.6",
+    "protobufjs": "^6.8.6",
     "source-map-support": "^0.4.15"
   },
   "devDependencies": {

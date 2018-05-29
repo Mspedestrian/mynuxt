@@ -1,13 +1,13 @@
 <template>
-<div class="container" v-if="userObj">
+<div class="container">
     <div class="cell ub border-bottom ub-ac ub hoverlink item" v-for="item in contactList" @click="goDetail(item)">
         <div class="ce-right">
-            <img :src="item.imgUrl" alt="">
+            <img :src="item.headPhoto" alt="">
         </div>
         <div class="ce-left">
-            <p class="ub ub-sb big-font"><span>{{item.nickName}}</span><span class="date">{{item.nickName}}</span></p>
-            <p>{{item.nickName}}</p>
-            <p v-if="item.userId == userObj.userId">这是我</p>
+            <p class="ub ub-sb big-font"><span>{{item.nickname}}</span><span class="date">{{item.nickname}}</span></p>
+            <p>{{item.nickname}}</p>
+            <!-- <p v-if="item.userId == userObj.userId">这是我</p> -->
         </div>
         
     </div>
@@ -35,11 +35,11 @@ export default {
             localStorage.setItem('toUserObj',JSON.stringify(item));
         },
         getAllList(){
-            if(!this.getCookie('userId')){
-                this.$router.push('/login');
-                return;
-            }
-            this.$axios.get('/api/user/userList')
+            // if(!this.getCookie('userId')){
+            //     this.$router.push('/login');
+            //     return;
+            // }
+            this.$axios.get(`/friend/getFriend?userId=${this.getCookie('userId')}`)
             .then((data)=>{
                 console.log(data);
                 this.contactList = data;
@@ -53,10 +53,10 @@ export default {
                 return null;
         },
         getUserById(){
-            if(!this.getCookie('userId')){
-                this.$router.push('/login');
-            }
-            this.$axios.get('/api/user/getUserById')
+            // if(!this.getCookie('userId')){
+            //     this.$router.push('/login');
+            // }
+            this.$axios.get('/user/getUserInfo')
             .then((data)=>{
                 this.userObj = data;
             })

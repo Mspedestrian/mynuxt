@@ -15,7 +15,7 @@ import axios from 'axios'
 
 // export default axios.create(options)
 // let apiURL = 'http://172.28.195.125/api/usercenter';
-let apiURL = ``;
+let apiURL = `http://172.28.194.26:8887`;
 // if(process.env.NODE_ENV=='test') {
 // 	apiURL = 'https://ts.shop.tiancaixing.com/api/usercenter';
 // }
@@ -36,19 +36,26 @@ export default function({error, req, isServer}, inject){
 
 	// loginOptions.baseURL = '';
 	// let loginRequest = axios.create(loginOptions);
+
 	let proxyHost = `${apiURL}`;
 
 	let proxyOptions = Object.assign({});
+
 	// proxyOptions.baseURL = `${process.server ? proxyHost : 'http://172.28.194.29:8030/proxy'}`;
 	proxyOptions.baseURL = proxyHost;
 	let proxyRequest = axios.create(proxyOptions);
+	proxyRequest.defaults.withCredentials = true;
 	// 请求回调拦截，得到data
 	proxyRequest.interceptors.response.use(function (res) {
 		let data = res.data;
-		if (data.code!='000001') {
+		if (data.code!=30100&& data.code!=30104) {
           return Promise.reject(new Error(data.code));
         }
-        return data.data;
+        if (data.code == 30104) {
+          location.href="/login"
+          return;
+        }
+        return data.result;
 	},function(error){
 		return Promise.reject(new Error(error));
 	});

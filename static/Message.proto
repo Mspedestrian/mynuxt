@@ -1,0 +1,46 @@
+syntax = "proto3";
+option java_package="com.zt.project.im.protobuf";
+//option java_outer_classname="Student";
+message BaseMessage{
+    int32  msgType =2;
+    bytes  bytesData = 3;
+//    int32  checkSum = 5; // adler32 of nameLen, typeName and protobufData
+}
+
+//type = 1
+message LoginReq{
+    int32 userId = 1;
+}
+
+
+//type=2
+message LoginRes{
+    int32 code = 1;
+    string desc = 2;
+}
+
+//type=3
+message HeartbeatReq{
+    int32 userId = 1;
+}
+
+//type=4
+message HeartbeatRes{
+    int32 code = 1;
+    string desc = 2;
+}
+
+//type=5
+message TextMessageReq{
+    string msgId = 1;
+    int32 userId = 2;
+    int32 reciverId = 3;
+    string content = 4;
+}
+
+//type=6 消息发送响应
+message MessageRes{
+    int32 code = 1;
+    string desc = 2;
+    string messageId = 3;
+}

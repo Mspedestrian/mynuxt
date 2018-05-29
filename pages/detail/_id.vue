@@ -1,6 +1,6 @@
 <template>
 <div class="container" id="container">
-    <div v-for="item in newsList" v-if="toUserObj&&fromUserObj">
+    <div v-for="item in newsList" v-if="newsList.length>0">
         <div class="cell ub cell-left" v-if="item.type==0">
             <div class="ce-img">
                 <img :src="item.imgUrl" alt="">
@@ -38,13 +38,14 @@ export default {
             msg:'',
             newsList:[],
             fromUserObj:null,
+            ws:null,
 
         }
     },
     computed:{
-        toUserObj(){
-            return JSON.parse(localStorage.getItem('toUserObj'));
-        }
+        // toUserObj(){
+        //     return JSON.parse(localStorage.getItem('toUserObj'));
+        // }
     },
     methods:{
         sendMsg(){
@@ -59,12 +60,12 @@ export default {
             }
             else {
                 let obj = {
-                    fromUserId:vm.fromUserObj.userId,
-                    fromNickName:vm.fromUserObj.fromNickName,
+                    // fromUserId:vm.fromUserObj.userId,
+                    // fromNickName:vm.fromUserObj.fromNickName,
                     message:vm.msg,
                     messageId:0,
-                    toUserId:vm.toUserObj.userId,
-                    toNickName:vm.toUserObj.nickName,
+                    // toUserId:vm.toUserObj.userId,
+                    // toNickName:vm.toUserObj.nickName,
                     type:'message',
                 }
                 this.ws.send(JSON.stringify(obj));
@@ -94,11 +95,11 @@ export default {
                 if(data.fromUserId == this.fromUserObj.userId){
                     let obj = {
                         id:data.messageId,
-                        imgUrl:this.fromUserObj.imgUrl,
+                        // imgUrl:this.fromUserObj.imgUrl,
                         message:data.message,
                         type:1,
-                        nickName:this.fromUserObj.nickName,
-                        userId:this.fromUserObj.userId,
+                        // nickName:this.fromUserObj.nickName,
+                        // userId:this.fromUserObj.userId,
                     }
                     console.log(obj);
                     this.newsList.push(obj);
@@ -108,11 +109,11 @@ export default {
                     console.log(data.message);
                     let obj = {
                         id:data.messageId,
-                        imgUrl:this.toUserObj.imgUrl,
+                        // imgUrl:this.toUserObj.imgUrl,
                         message:data.message,
                         type:0,
-                        nickName:this.toUserObj.nickName,
-                        userId:this.toUserObj.userId,
+                        // nickName:this.toUserObj.nickName,
+                        // userId:this.toUserObj.userId,
                     }
                     console.log(obj);
                     this.newsList.push(obj);
@@ -140,7 +141,7 @@ export default {
         setSocket(){
             let vm = this;
             if(window.WebSocket){
-                this.ws = new WebSocket(`ws://${location.hostname}:8001`);
+                this.ws = new WebSocket(`ws://http://172.28.194.26:8889`);
 
                 this.ws.onopen = function(e){
                     console.log("连接服务器成功");
@@ -148,7 +149,7 @@ export default {
                         type:'openUser',
                         userId:vm.fromUserObj.userId
                     }
-                    vm.ws.send(JSON.stringify(obj));
+                    // vm.ws.send(JSON.stringify(obj));
                 }
                 this.ws.onclose = function(e){
                     console.log("服务器关闭");
@@ -176,7 +177,7 @@ export default {
                 return null;
         },
         getUserById(){
-            this.$axios.get('/api/user/getUserById')
+            this.$axios.get('/user/getUserInfo')
             .then((data)=>{
                 this.fromUserObj = data;
                 this.setSocket();
@@ -191,7 +192,7 @@ export default {
                 $('#msg_end').click(); 
                 
             },500)
-        this.getAllList();
+        // this.getAllList();
         // this.setSocket();
         if(!this.getCookie('userId')){
             this.$router.push('/login');
@@ -211,7 +212,7 @@ export default {
     head () {
         let vm = this;
         return {
-          title: `${vm.toUserObj.nickName}`
+          // title: `${vm.toUserObj.nickName}`
         }
     }
 }

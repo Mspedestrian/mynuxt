@@ -37,13 +37,13 @@ export default {
     },
     methods:{
         login(){
-            this.$axios.post('/api/signup',{
-                userName:this.userName,
+            this.$axios.post('/login',{
+                username:this.userName,
                 password:this.password,
             })
             .then((data)=>{
                 console.log(data);
-                this.setCookie('userId', encodeURIComponent(data), 7);
+                this.setCookie('userId', encodeURIComponent(data.userId), 7);
                 Toast({
                     message: '登录成功',
                     position: 'top',
