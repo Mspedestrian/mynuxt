@@ -3,20 +3,20 @@
     <div v-for="item in newsList" v-if="newsList.length>0">
         <div class="cell ub cell-left" v-if="item.type==0">
             <div class="ce-img">
-                <img :src="item.imgUrl" alt="">
+                <img :src="toUserObj.imgUrl" alt="">
             </div>
             <div class="ce-message">
-                <p class="big-font mes-pop-left"><span>{{item.message}}</span></p>
+                <p class="big-font mes-pop-left"><span>{{item.content}}</span></p>
             </div>
             
         </div>
         <div class="cell ub cell-right ub-pe" v-if="item.type==1">
             
             <div class="ce-message">
-                <p class="big-font mes-pop-right"><span>{{item.message}}</span></p>
+                <p class="big-font mes-pop-right"><span>{{item.content}}</span></p>
             </div>
             <div class="ce-img">
-                <img :src="item.imgUrl" alt="">
+                <img :src="fromUserObj.headPhoto" alt=""> 
             </div>
             
         </div>
@@ -39,6 +39,7 @@ export default {
             newsList:[],
             fromUserObj:null,
             ws:null,
+            toUserObj:null,
 
         }
     },
@@ -57,77 +58,46 @@ export default {
                     position: 'middle',
                     // duration: 2000
                 });
+                return;
             }
-            else {
-                let obj = {
-                    // fromUserId:vm.fromUserObj.userId,
-                    // fromNickName:vm.fromUserObj.fromNickName,
-                    message:vm.msg,
-                    messageId:0,
-                    // toUserId:vm.toUserObj.userId,
-                    // toNickName:vm.toUserObj.nickName,
-                    type:'message',
-                }
-                this.ws.send(JSON.stringify(obj));
-                // let obj = {
-                //     id:1,
-                //     imgUrl:'https://shop-file.tiancaixing.com/2018/5/14/1526267875600/ve1w37FG.jpg',
-                //     message:'蒸水蛋蒸水蛋蒸水蛋蒸水蛋蒸水蛋蒸水蛋蒸水蛋蒸水蛋蒸水蛋',
-                //     type:1,
-                //     nickName:'蒸水蛋',
-                //     userId:12,
-                // }
-                // console.log(obj);
-                // this.newsList.push(obj);
-            }
-            
+            let textObj = vm.$TextMessageReq.create({ 
+                msgId:'1',
+                userId:vm.fromUserObj.id,
+                reciverId:parseInt(vm.$route.params.id),
+                content:vm.msg,
+            });
+            this.newsList.push({
+                msgId:'1',
+                userId:vm.fromUserObj.id,
+                reciverId:parseInt(vm.$route.params.id),
+                content:vm.msg,
+                type:1,
+            })
+            let baseMessage =  vm.$BaseMessage.create({ msgType: 5,bytesData:vm.$TextMessageReq.encode(textObj).finish()});
+
+            let buffer =  vm.$BaseMessage.encode(baseMessage).finish();
+            vm.ws.send(buffer); 
             this.msg = '';
             
             
             
         },
-        getSocketData(res){
-            console.log(res);
-            if(res.code == '000001'&&res.type=='message'){
-                let data = res.data;
-                //本人发的
-
-                if(data.fromUserId == this.fromUserObj.userId){
-                    let obj = {
-                        id:data.messageId,
-                        // imgUrl:this.fromUserObj.imgUrl,
-                        message:data.message,
-                        type:1,
-                        // nickName:this.fromUserObj.nickName,
-                        // userId:this.fromUserObj.userId,
-                    }
-                    console.log(obj);
-                    this.newsList.push(obj);
-                    
-                }
-                else {
-                    console.log(data.message);
-                    let obj = {
-                        id:data.messageId,
-                        // imgUrl:this.toUserObj.imgUrl,
-                        message:data.message,
-                        type:0,
-                        // nickName:this.toUserObj.nickName,
-                        // userId:this.toUserObj.userId,
-                    }
-                    console.log(obj);
-                    this.newsList.push(obj);
-                    
-                }
-            }
-            else {
-
-            }
+        getSocketData(res,type){
+            
+            
             setTimeout(function(){
                 $('#msg_end').click(); 
                 // $('#msg_end').scrollIntoView();
                 // $('#container').scrollTop = $('#container').scrollHeight;
             },500)
+            if(type == 5){
+                console.log(res);
+                let obj = {
+                    type:0,
+                }
+                obj = Object.assign({},obj,res);
+                this.newsList.push(obj);
+            }
             
             
         },
@@ -140,16 +110,17 @@ export default {
         },
         setSocket(){
             let vm = this;
+            console.log('开始请求')
             if(window.WebSocket){
-                this.ws = new WebSocket(`ws://http://172.28.194.26:8889`);
+                this.ws = new WebSocket(`ws://172.28.194.26:8889/ws`);
 
                 this.ws.onopen = function(e){
                     console.log("连接服务器成功");
-                    let obj = {
-                        type:'openUser',
-                        userId:vm.fromUserObj.userId
-                    }
-                    // vm.ws.send(JSON.stringify(obj));
+                    let userObj = vm.$LoginReq.create({ userId:vm.fromUserObj.id});
+                    let baseMessage =  vm.$BaseMessage.create({ msgType: 1,bytesData:vm.$LoginReq.encode(userObj).finish()});
+    
+                    let buffer =  vm.$BaseMessage.encode(baseMessage).finish();
+                    vm.ws.send(buffer);
                 }
                 this.ws.onclose = function(e){
                     console.log("服务器关闭");
@@ -158,14 +129,46 @@ export default {
                     console.log("连接出错");
                 }
 
-                this.ws.onmessage = function(e){
+                this.ws.onmessage = function(evt){
                     // ws.send('我在发消息');
                     // document.querySelector("#sendMsg").onclick = function(e){
                     //     // var time = new Date();
                     //     vm.ws.send('我在发消息');
-                    console.log(e);
+                    // console.log(e);
                     // }
-                    vm.getSocketData(JSON.parse(e.data));
+
+
+                    let reader = new FileReader();
+                    reader.readAsArrayBuffer(evt.data);
+                    reader.onload = function (e) {
+                        let buf = new Uint8Array(reader.result);
+                        let tempMessage = vm.$BaseMessage.decode(buf);
+                        console.log(tempMessage)
+                  
+                        if(tempMessage.msgType == 1){
+                            let textMessage = vm.$LoginRes.decode(tempMessage.bytesData);
+                 
+                            if(textMessage.code!==30100){
+                                Toast({
+                                    message: textMessage.desc,
+                                    position: 'middle',
+                                    // duration: 2000
+                                });
+                            }
+                        }
+                        // 6消息发送相应
+                        if(tempMessage.msgType == 6){
+                            let textMessage = vm.$MessageRes.decode(tempMessage.bytesData);
+                            vm.getSocketData(textMessage,6);
+                        }
+                        if(tempMessage.msgType == 5){
+                            let textMessage = vm.$TextMessageReq.decode(tempMessage.bytesData);
+                            vm.getSocketData(textMessage,5);
+                        }
+
+                    
+                    }
+                    
                 }
             }
         },
@@ -186,6 +189,15 @@ export default {
 
             })
         },
+        getToUser(){
+             this.$axios.get(`/user/getUserInfoById?userId=${this.$route.params.id}`)
+            .then((data)=>{
+                this.toUserObj = data;
+            })
+            .catch((e)=>{
+
+            })
+        }
     },
     mounted(){
         setTimeout(function(){

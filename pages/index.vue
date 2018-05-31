@@ -1,8 +1,13 @@
 <template>
 <div class="container">
-    <div class="cell ub border-bottom ub-ac ub hoverlink item" v-for="item in contactList" @click="goDetail(item)">
+    <input class="search" @click="goSearch" placeholder="输入用户名全程进行搜索用户哦">
+        
+    </input>
+    <div class="cell ub border-bottom ub-ac ub hoverlink item"  v-for="item in contactList" @click="goDetail(item)">
         <div class="ce-right">
             <img :src="item.headPhoto" alt="">
+           
+
         </div>
         <div class="ce-left">
             <p class="ub ub-sb big-font"><span>{{item.nickname}}</span><span class="date">{{item.nickname}}</span></p>
@@ -31,8 +36,11 @@ export default {
     },
     methods:{
         goDetail(item){
-            this.$router.push(`/detail/item.userId`)
-            localStorage.setItem('toUserObj',JSON.stringify(item));
+            this.$router.push(`/user/${item.id}`)
+            // localStorage.setItem('toUserObj',JSON.stringify(item));
+        },
+        goSearch(){
+            this.router.push('/search');
         },
         getAllList(){
             // if(!this.getCookie('userId')){
@@ -98,6 +106,21 @@ export default {
 .ce-left {
     width:600px;
 }
-
+.search {
+    border:1Px solid #f3f3f3;
+    width: 100%;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    height: 60px;
+    border-radius: 10px;
+    background: white;
+    line-height: 60px;
+    // text-align: center;
+    font-size: 26px;
+    display: inline-block;
+    padding: 15px;
+    // margin-left: 10px;
+    // color:#aaa;
+}
 
 </style>

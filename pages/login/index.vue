@@ -14,6 +14,7 @@
     </div>
     
     <div class="login-but" v-on:click="login()"><mt-button type="primary" size="large" >登录</mt-button></div>
+    <span class="hovera">忘记密码</span><span class="hovera" @click="goSign">注册</span>
     </div>
 </div>
 </template>
@@ -64,6 +65,9 @@ export default {
             })
             
         },
+        goSign(){
+            this.$router.push('/login/sign');
+        },
         setCookie(cname, cvalue, exdays) {
             var d = new Date();
             d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -74,7 +78,7 @@ export default {
     },
     head () {
         return {
-          title: ''
+          title: '登录'
         }
     }
 }
@@ -116,6 +120,16 @@ export default {
         padding: 10px;
         border:none;
 
+    }
+}
+.hovera {
+    color:#2c8cf0;
+    margin-right: 20px;
+    margin-left: 30px;
+    margin-top: 20px;
+    float: right;
+    &:hover {
+        color:#82d447;
     }
 }
 

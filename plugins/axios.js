@@ -16,6 +16,7 @@ import axios from 'axios'
 // export default axios.create(options)
 // let apiURL = 'http://172.28.195.125/api/usercenter';
 let apiURL = `http://172.28.194.26:8887`;
+import Vue from 'vue'
 // if(process.env.NODE_ENV=='test') {
 // 	apiURL = 'https://ts.shop.tiancaixing.com/api/usercenter';
 // }
@@ -49,14 +50,22 @@ export default function({error, req, isServer}, inject){
 	proxyRequest.interceptors.response.use(function (res) {
 		let data = res.data;
 		if (data.code!=30100&& data.code!=30104) {
+			// Vue.prototype.$Modal.warning({
+			// 	title:data.code,
+			// 	content:data.desc,
+			// })
           return Promise.reject(new Error(data.code));
         }
         if (data.code == 30104) {
-          location.href="/login"
+          // location.href="/login"
           return;
         }
         return data.result;
 	},function(error){
+		// Vue.prototype.$Modal.warning({
+		// 	title:error.message,
+		// 	content:error.message,
+		// })
 		return Promise.reject(new Error(error));
 	});
 	inject('axios', proxyRequest);

@@ -21,46 +21,34 @@
         <div class="ce-left">{{userObj.sex}}</div>
     </div>
      <div class="height40"></div>
-    <mt-button type="primary" size="large" @click="signOut(userObj)">退出登录</mt-button>
-    
-   <footer-menu selected="user"></footer-menu>
+    <mt-button type="primary" size="large" @click="goDetail(userObj)">发消息</mt-button>
+    <div class="height40"></div>
+    <mt-button type="primary" size="large" @click="goDetail(userObj)">接受</mt-button>
+    <div class="height40"></div>
+    <mt-button size="large" @click="goDetail(userObj)">拒绝</mt-button>
+    <div class="height40"></div>
+    <mt-button size="large" @click="goDetail(userObj)">删除好友</mt-button>
 </div>
 </template>
 
 <script>
-import FooterMenu from '~/components/FooterMenu'
+
 export default {
     components:{
-        FooterMenu
+       
     },
     data(){
         return {
             imgUrl:require('~/assets/img/user1.jpg'),
-            name:'遗落的灯花',
+            contactList: [],
             userObj:null,
         }
 
     },
-    
     methods:{
-        signOut(){
-            this.setCookie('userId','',-1);
-            this.$router.push('/login');
-        },
-        getUserById(){
-            this.$axios.get('/user/getUserInfo')
-            .then((data)=>{
-                this.userObj = data;
-            })
-            .catch((e)=>{
-
-            })
-        },
-        setCookie(cname, cvalue, exdays) {
-            var d = new Date();
-            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-            var expires = "expires=" + d.toUTCString();
-            document.cookie = cname + "=" + cvalue + "; " + expires + ';path=/;domain='+location.hostname;
+        goDetail(item){
+            this.$router.push(`/detail/${item.id}`)
+            // localStorage.setItem('toUserObj',JSON.stringify(item));
         },
         getCookie(name) {
             var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
@@ -69,18 +57,25 @@ export default {
             else
                 return null;
         },
-        
+        getUserById(){
+            // if(!this.getCookie('userId')){
+            //     this.$router.push('/login');
+            // }
+            this.$axios.get(`/user/getUserInfoById?userId=${this.$route.params.id}`)
+            .then((data)=>{
+                this.userObj = data;
+            })
+            .catch((e)=>{
+
+            })
+        },
     },
     mounted(){
-        if(!this.getCookie('userId')){
-            this.$router.push('/login');
-            return;
-        }
         this.getUserById();
     },
     head () {
         return {
-          title: ''
+          title: '详细资料'
         }
     }
 }
@@ -110,7 +105,5 @@ export default {
         color:#aaa;
     }
 }
-
-
 
 </style>

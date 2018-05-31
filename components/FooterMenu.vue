@@ -12,10 +12,10 @@
     </mt-tabbar> -->
     <div class="bottom-menu">
         <div class="menu-item" :class="{actived:currentClick == 'index'}" @click="clickRouter('index')">
-            首页
+            我的好友
         </div>
         <div class="menu-item" :class="{actived:currentClick == 'user'}" @click="clickRouter('user')">
-            我的
+            我
         </div>
     </div>
 </div>
@@ -87,7 +87,7 @@ export default {
         }
         transition: all 2s;
         &.actived {
-            background: #58d400;
+            background: #26a2ff;
             color:white;
         }
     }
