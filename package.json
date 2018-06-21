@@ -18,6 +18,7 @@
     "cross-env": "^5.0.1",
     "css-loader": "^0.28.11",
     "express": "^4.15.3",
+    "fs": "^0.0.1-security",
     "less": "^3.0.4",
     "less-loader": "^4.1.0",
     "mint-ui": "^2.2.13",
@@ -27,7 +28,8 @@
     "postcss-px2rem": "^0.3.0",
     "postcss-px2rem-exclude": "^0.0.6",
     "protobufjs": "^6.8.6",
-    "source-map-support": "^0.4.15"
+    "source-map-support": "^0.4.15",
+    "vue-loader": "13.7.2"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",

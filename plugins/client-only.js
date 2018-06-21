@@ -21,3 +21,9 @@ protobuf.load("/Message.proto", function (err, root) {
     // console.log(baseMessage)
     // buffer = BaseMessage.encode(baseMessage).finish();
 });
+
+
+import MyHeader from '~/components/Header'
+
+
+Vue.component('my-header', MyHeader)

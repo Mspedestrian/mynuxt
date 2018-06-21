@@ -1,5 +1,6 @@
 <template>
 <div class="container" v-if="userObj">
+    <my-header title="我的首页"></my-header>
     <div class="cell ub border-bottom back-white">
         <div class="ce-right">
             <img :src="userObj.headPhoto" alt="">
@@ -48,7 +49,10 @@ export default {
             this.$router.push('/login');
         },
         getUserById(){
-            this.$axios.get('/user/getUserInfo')
+            // if(!this.getCookie('userId')){
+            //     this.$router.push('/login');
+            // }
+            this.$axios.get(`/user/getUserInfoById?userId=${this.getCookie('userId')}`)
             .then((data)=>{
                 this.userObj = data;
             })

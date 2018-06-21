@@ -1,5 +1,6 @@
 <template>
-<div class="container" id="container">
+<div class="container" id="container" v-if="toUserObj">
+    <my-header :title="toUserObj.nickname"></my-header>
     <div v-for="item in newsList" v-if="newsList.length>0">
         <div class="cell ub cell-left" v-if="item.type==0">
             <div class="ce-img">
@@ -179,38 +180,37 @@ export default {
             else
                 return null;
         },
-        getUserById(){
-            this.$axios.get('/user/getUserInfo')
+        getUserById(id,callback){
+            this.$axios.get(`/user/getUserInfoById?userId=${id}`)
             .then((data)=>{
-                this.fromUserObj = data;
-                this.setSocket();
+                
+                callback&&callback(data);
             })
             .catch((e)=>{
 
             })
         },
-        getToUser(){
-             this.$axios.get(`/user/getUserInfoById?userId=${this.$route.params.id}`)
-            .then((data)=>{
-                this.toUserObj = data;
-            })
-            .catch((e)=>{
-
-            })
-        }
+        
     },
     mounted(){
-        setTimeout(function(){
-                $('#msg_end').click(); 
+        // setTimeout(function(){
+        //         $('#msg_end').click(); 
                 
-            },500)
+        //     },500)
         // this.getAllList();
         // this.setSocket();
         if(!this.getCookie('userId')){
             this.$router.push('/login');
             return;
         }
-        this.getUserById();
+        let vm = this;
+        this.getUserById(this.$route.params.id,(data)=>{
+            vm.toUserObj = data;
+        });
+        this.getUserById(this.getCookie('userId'),(data)=>{
+            vm.fromUserObj = data;
+            vm.setSocket();
+        });
         // this.$refs.inputMsg.focus(function(){
         //     alert('1111');
         // })

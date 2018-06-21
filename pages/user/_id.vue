@@ -1,5 +1,6 @@
 <template>
 <div class="container" v-if="userObj">
+    <my-header :title="userObj.nickname"></my-header>
     <div class="cell ub border-bottom back-white">
         <div class="ce-right">
             <img :src="userObj.headPhoto" alt="">
@@ -23,16 +24,20 @@
      <div class="height40"></div>
     <mt-button type="primary" size="large" @click="goDetail(userObj)">发消息</mt-button>
     <div class="height40"></div>
-    <mt-button type="primary" size="large" @click="goDetail(userObj)">接受</mt-button>
+    <mt-button type="primary" size="large" @click="changeFriend(userObj,2)">接受</mt-button>
     <div class="height40"></div>
-    <mt-button size="large" @click="goDetail(userObj)">拒绝</mt-button>
+    <mt-button size="large" @click="changeFriend(userObj,5)">拒绝</mt-button>
     <div class="height40"></div>
-    <mt-button size="large" @click="goDetail(userObj)">删除好友</mt-button>
+    <mt-button size="large" type="primary" @click="changeFriend(userObj,1)">加好友</mt-button>
+    <div class="height40"></div>
+    <mt-button size="large" @click="changeFriend(userObj,4)">删除好友</mt-button>
+    <div class="height40"></div>
+    <mt-button size="large" @click="changeFriend(userObj,3)">拉入黑名单</mt-button>
 </div>
 </template>
 
 <script>
-
+import { Toast } from 'mint-ui'
 export default {
     components:{
        
@@ -49,6 +54,25 @@ export default {
         goDetail(item){
             this.$router.push(`/detail/${item.id}`)
             // localStorage.setItem('toUserObj',JSON.stringify(item));
+        },
+    //     APPLYING(1,"申请中"),
+    // AGREED(2,"已同意"),
+    // BLACK_LIST(3,"黑名单"),
+    // DELETE(4,"已删除"),
+    // REJECT(5,"已拒绝");
+        changeFriend(obj,type){
+            this.$axios.post(`/friend/agree`,{
+                friendId:this.userObj.id,
+                userId:parseInt(this.getCookie('userId')),
+                status:type,
+            })
+            .then((data)=>{
+                this.getUserById();
+                Toast({
+                    message: '操作成功',
+                    position: 'middom',
+                })
+            })
         },
         getCookie(name) {
             var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");

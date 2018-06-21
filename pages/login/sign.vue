@@ -93,7 +93,7 @@ export default {
             })
             .then((data)=>{
                 console.log(data);
-                this.setCookie('userId', encodeURIComponent(data.userId), 7);
+                // this.setCookie('userId', encodeURIComponent(data.userId), 7);
                 Toast({
                     message: '注册成功，去登陆',
                     position: 'top',
